@@ -1,0 +1,225 @@
+<!doctype html>
+<html lang="us">
+<head>
+	<meta charset="utf-8">
+	<title>My Holiday</title>
+	<link href="jquery-ui.css" rel="stylesheet">
+	<style>
+		#container {
+			width: 80%;
+			border: 1px solid #8e846b;
+			margin: 0 auto;
+			margin-top: -150px;
+			border-radius: 10px;
+			background-color: rgb(254, 238, 189);
+			height: 610px;
+		}
+
+		#sun {
+			position: relative;
+			margin-left: 10%;
+			width: 150px;
+			height: 150px;
+		}
+
+		h1 {
+			margin: 0 auto;
+			margin-top: 30px;
+			border: 1px solid #494437;
+			border-radius: 8px;
+			text-align: center;
+			color: #fff;
+			padding: 10px;
+			background: #817865 url("images/ui-bg_gloss-wave_45_817865_500x100.png") 50% 50% repeat-x;
+			width: 80%;
+		}
+
+		h2 {
+			display: inline;
+		}
+
+		#datepickers {
+			margin-left: 30px;
+		}
+		
+		#holidays img {
+			widht: 100px;
+			height: 100px;
+			margin-left: 8.5%;
+			margin-top: 3%;
+		}
+		
+		.draggable { 
+			width: 100px; 
+			height: 100px; 
+		}
+		
+		#droppable { 
+			width: 95%; 
+			height: 130px;
+			margin: 0 auto;
+			margin-top: 1%;
+			border-radius: 8px;
+			text-align: center;
+			color: white;
+		}
+		
+		.droppable-field {
+			background: #817865 url("images/ui-bg_gloss-wave_45_817865_500x100.png") 100% 0% repeat-x;
+		}
+		
+		p {
+			padding-top: 2%;
+		}
+		
+		#btn {
+			text-align: center;
+			margin-top: 0.5%;
+		}
+		
+		#txt-bottom {
+			color: red;
+			font-weight: bold;
+			font-size: 14px;
+			margin-top: -2.5%;
+			margin-left: 70%;
+		}
+		
+		#holidayError {
+			color: red;
+			font-weight: bold;
+			font-size: 14px;
+			text-align: center;
+		}
+	</style>
+</head>
+<body>
+
+<img id="sun" src="images/sun.png" />
+		<div id="container" class="demoHeaders">
+			<h1>My Holiday</h1>
+			<br />
+			<div id="datepickers">
+				<span style="margin-right: 20%; margin-left: 15%; font-weight: bold;">Pick dates</span>
+
+				<span>From</span>
+				<input type="text" id="datepicker1" />
+				
+				<span>To</span>
+				<input type="text" id="datepicker2" />
+				
+				<span id="error"></span>
+			</div>
+			
+			<div id="holidays">
+				<img class="draggable" class="ui-widget-content" src="images/cocos.jpg"/>
+				<img class="draggable" class="ui-widget-content" src="images/climb.jpg"/>
+				<img class="draggable" class="ui-widget-content" src="images/bungee-jumping.jpg"/>
+				<img class="draggable" class="ui-widget-content" src="images/diving.jpg"/>
+				<img class="draggable" class="ui-widget-content" src="images/rafting.jpg"/>
+				<br />
+				<img class="draggable" class="ui-widget-content" src="images/surfing.jpg"/>
+				<img class="draggable" class="ui-widget-content" src="images/festival.jpg"/>
+				<img class="draggable" class="ui-widget-content" src="images/baloon.jpg"/>
+				<img class="draggable" class="ui-widget-content" src="images/mountain.jpg"/>
+				<img class="draggable" class="ui-widget-content" src="images/ski.jpg"/>
+			</div>
+			
+			<div id="droppable" class="droppable-field">
+			  <p>Drag & Drop 3 wanted holidays here</p>
+			</div>
+				
+			<div>
+				<div id="btn">
+					<button id="button" class="btn">Submit</button>
+					<button id="btn-new">New Holiday</button>
+				</div>
+				<div id="txt-bottom"></div>
+			</div>
+		</div>
+
+<script src="external/jquery/jquery.js"></script>
+<script src="jquery-ui.js"></script>
+<script>
+
+$( "#button" ).button();
+$( "#btn-new" ).button();
+
+$( "#datepicker1" ).datepicker({
+	inline: true
+});
+
+$( "#datepicker2" ).datepicker({
+	inline: true
+});
+
+$(function() {
+	
+	$( "#btn-new" ).on('click', function () {
+		location.reload(true);
+	});
+
+	var counter = 0;
+
+	if (counter < 3) {
+		$( ".draggable" ).draggable();
+		$( "#droppable" ).droppable({
+			drop: function( event, ui ) {
+	
+				ui.draggable.addClass("new-draggable");
+				counter++;
+				$( this )
+				.removeClass( "droppable-field" )
+				.addClass( "ui-state-highlight" )
+				.find( "p" )
+				.text('');
+				
+				if (counter >= 3) {
+					$( ".draggable" ).draggable( "disable" );
+					$( ".new-draggable" ).draggable( "enable" );
+				}	
+			}
+		});
+		$( "#txt-bottom" ).text("");
+		
+	} else if (counter >= 3) {
+		$( ".draggable" ).draggable( "disable" );
+		$( ".new-draggable" ).draggable( "enable" );
+	}
+	
+	$( ".btn" ).on('click', function () {
+		var startDate = $( "#datepicker1" ).datepicker( "getDate" );
+		var endDate = $( "#datepicker2" ).datepicker( "getDate" );
+		console.log($( "#txt-bottom" ).text());
+		if (endDate < startDate) {
+			$("#error").text("Invalid dates!").css("color", "red");
+			$('#datepicker1').datepicker('setDate', startDate);
+			$('#datepicker2').datepicker('setDate', endDate);
+			return false;
+		} else if (!(endDate - startDate == 3 * 86400 * 1000)) {
+			$("#error").text("Pick three days!").css("color", "red");
+			$('#datepicker1').datepicker('setDate', startDate);
+			$('#datepicker2').datepicker('setDate', endDate);
+			return false;
+		} else if (!$( "#txt-bottom" ).text()){
+			$("#error").text('');
+			$('#datepicker1').datepicker('setDate', startDate);
+			$('#datepicker2').datepicker('setDate', endDate);
+		} else if ($( "#txt-bottom" ).text() == "Select types of holiday" || $( "#txt-bottom" ).text() == "") {
+			$('#datepicker1').datepicker('setDate', null);
+			$('#datepicker2').datepicker('setDate', null);
+		}
+		
+		$(".draggable").animate({left:0,top:0});
+		
+		$( "#txt-bottom" ).text("Your holiday is ready!");
+		
+		if (counter == 0) {
+			$( "#txt-bottom" ).text("Select types of holiday");
+		}
+	});
+	
+});
+</script>
+</body>
+</html>
